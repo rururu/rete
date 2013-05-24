@@ -6,6 +6,8 @@ Clojure RETE implementation
 Benchmark table
 ----
 
+<table><tr><td>1</td><td>2</td></tr></table>
+
 ****************************************************
 *   Test     * CLIPS (msec) * rete (msec) * factor *
 ****************************************************
