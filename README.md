@@ -1,0 +1,4 @@
+rete
+====
+
+Clojure RETE implementation
