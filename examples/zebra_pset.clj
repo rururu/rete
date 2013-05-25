@@ -41,7 +41,7 @@
            != ?h7)
       (?h9 smokes chesterfields)
       (?h10 pet fox)
-      (?h9   != ?h6)
+      (?h9  != ?h6)
       (?h10 != ?h2
             != ?h6)
       ((= ?h9 (+ ?h10 1)) or (= ?h9 (- ?h10 1)))
@@ -75,8 +75,8 @@
             != ?h3
             != ?h4)
       ((= ?h13 (+ ?h14 1)) or (= ?h13 (- ?h14 1)))
-      (?h15 color blue)
-      (?h15 != ?h1
+      (?h15 color blue
+      		!= ?h1
             != ?h3
             != ?h4
             != ?h14)
@@ -92,5 +92,78 @@
             != ?h10
             != ?h13))
     =>
-    ((println [?h1 ?h2 ?h3 ?h4 ?h5 ?h6 ?h7 ?h8 ?h9 ?h10 ?h11 ?h12 ?h13 ?h14 ?h15 ?h16 ?h17]))))
+    ((println [?h1 ?h2 ?h3 ?h4 ?h5 ?h6 ?h7 ?h8 ?h9 ?h10 ?h11 ?h12 ?h13 ?h14 ?h15 ?h16 ?h17])
+      (asser solution
+             h1 ?h1
+             h2 ?h2
+             h7 ?h7
+             h8 ?h8
+             h12 ?h12
+             h16 ?h16
+             h17 ?h17)))
+  (Englishman-drinks-water
+    0
+    ((solution
+             h1 ?h1
+             h16 ?h16)
+      (?h16 = ?h1))
+    =>
+    ((println "englishman drinks water")))
+  (Spaniard-drinks-water
+    0
+    ((solution
+             h2 ?h2
+             h16 ?h16)
+      (?h16 = ?h2))
+    =>
+    ((println "spaniard drinks water")))
+  (Norwegian-drinks-water
+    0
+    ((solution
+             h8 ?h8
+             h16 ?h16)
+      (?h16 = ?h8))
+    =>
+    ((println "norwegian drinks water")))
+  (Japanese-drinks-water
+    0
+    ((solution
+             h12 ?h12
+             h16 ?h16)
+      (?h16 = ?h12))
+    =>
+    ((println "japanese drinks water")))
+  (Englishman-owns-zebra
+    0
+    ((solution
+             h1 ?h1
+             h17 ?h17)
+      (?h17 = ?h1))
+    =>
+    ((println "englishman owns zebra")))
+  (Ukrainian-owns-zebra
+    0
+    ((solution
+             h7 ?h7
+             h17 ?h17)
+      (?h17 = ?h7))
+    =>
+    ((println "ukrainian owns zebra")))
+  (Norwegian-owns-zebra
+    0
+    ((solution
+             h8 ?h8
+             h17 ?h17)
+      (?h17 = ?h8))
+    =>
+    ((println "norwegian owns zebra")))
+  (Japanese-owns-zebra
+    0
+    ((solution
+             h12 ?h12
+             h17 ?h17)
+      (?h17 = ?h12))
+    =>
+    ((println "japanese owns zebra"))))
+             
 

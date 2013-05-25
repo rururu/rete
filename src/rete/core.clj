@@ -90,7 +90,8 @@
         hm))))
 
 (defn add-anet-entry
-  "If <trip> in a left hand side of a rule is a pattern (not test with a function on the predicate place) adds a new entry to the hash map  <hm> representing the beta net"
+  "If <trip> in a left hand side of a rule is a pattern (not test with a function on the predicate place)
+   adds a new entry to the hash map <hm> representing the beta net"
   [trip hm]
   ;;(println [:ADD-ANET-ENTRY :TRIP trip :HM hm])
   (if (func? (pred trip))
