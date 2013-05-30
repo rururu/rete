@@ -32,7 +32,7 @@ The right hand side is a list of function calls.
 Fact and fact pattern
 ----
 
-The fact is a triple or object description.
+The fact is a triple or an object description.
 The triple is a list of three parts:
 
 ```
@@ -41,21 +41,21 @@ The triple is a list of three parts:
 
 The subject and object can be symbols, strings, numbers or lists (vectors, maps)
 The predicate is a symbol or a string.
-The subject and/or object can be a variables, that is symbols beginning from the question mark "?".
+The subject and/or object can be variables, that is symbols beginning from the question mark "?".
 In this case, the triple is called a triple pattern.
 
 Object description
 ----
 
-The object description is a representation of list of triples with the same subject:
+The object description is a representation of the list of triples with the same subject:
 ```
 (( <subject> <predicate1> <object1> ) ( <subject> <predicate2> <object2> ) ... ( <subject> <predicateN> <objectN> ))
 ```
-as list with this subject on a first place and a rest of the list consisting of concatenated rests of all triples:
+as a list with this subject on a first place and a rest of the list consisting of concatenated rests of all triples:
 ```
 ( <subject> <predicate1> <object1> <predicate2> <object2> ... <predicateN> <objectN> )
 ```
-In this case, the subject is treated as the name of the object, predicates - as object properties, and objects as property values:
+In this case, the subject is treated as an object, predicates - as this object properties, and objects as property values:
 ```
 ( <object> <property1> <value1> <property2> <value2> ... <propertyN> <valueN> )
 
