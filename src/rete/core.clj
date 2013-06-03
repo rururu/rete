@@ -1,6 +1,9 @@
 (ns rete.core
+  (:use clojure.java.io)
   (:import java.util.HashMap)
   (:gen-class))
+
+(def DEBUG nil)
 
 (defn throw-mess [mess]
   "Throw message"
@@ -112,10 +115,12 @@
   "Build the alpha net for the given production set (rule set) <pset> as a hash map"
   [pset]
   (loop [pp pset anet nil]
+    (if DEBUG (println [:PRODUCTION (first pp)]))
     (if (empty? pp)
       anet
       (recur (rest pp)
              (loop [trips (trans-lhs (lhs (first pp))) ant anet]
+               (if DEBUG (println [:TRIPLE (first trips)]))
                (if (empty? trips)
                  ant
                  (recur (rest trips) (add-anet-entry (first trips) ant)) ))) )))
@@ -261,7 +266,9 @@
   "Create RETE from a production set and reset"
   (try
     (def =ACNT= 0)
+    (if DEBUG (println ".... Creating ANET PLAN for Pset ...."))
     (def =ANET= (anet-for-pset pset))
+    (if DEBUG (println ".... Creating BNET PLAN for Pset ...."))
     (def =BPLAN= (beta-net-plan pset =ANET=))
     (def =ABLINK= (object-array =ACNT=))
     (def =BCNT= (count =BPLAN=))
@@ -269,6 +276,10 @@
     (fill-bnet =BNET= =BPLAN=)
     (fill-ablink =ABLINK= =BPLAN=)
     (reset)
+    (when DEBUG
+      (log-rete)
+      (println ".... Log Files Created ....")
+      (println ".... RETE Created and Reset ...."))
     [=ACNT= =BCNT=]
     (catch Throwable twe
       (println twe)
@@ -283,33 +294,34 @@
   (def =CFSET= nil)
   (def =FIDS= (HashMap.)))
 
-(defn log-lst [tit x]
+(defn log-lst [path x]
   "Log list"
-  (let [log (with-out-str (doall (map println x)))]
-    log))
+  (let [fos (writer path)]
+    (doall (map #(.write fos (str % "\n")) x))
+    (.close fos)))
 
-(defn log-hm [tit x]
+(defn log-hm [path x]
   "Log HashMap"
-  (let [log (with-out-str
-              (doseq [[k v] (into {} x)]
-                (println (str k ":"))
-                (doseq [[k2 v2] v]
-                  (println (str " " k2 ": " v2)) ) ))]
-    log))
+  (let [fos (writer path)]
+    (doseq [[k v] (into {} x)]
+      (.write fos (str k ":" "\n"))
+      (doseq [[k2 v2] v]
+        (.write fos (str " " k2 ": " v2 "\n"))))
+    (.close fos)))
 
-(defn log-array [tit a]
+(defn log-array [path a]
   "Log array"
-  (let [log (with-out-str
-              (dotimes [i (count a)]
-                (println (str i " " (seq (aget a i)) )) ))]
-    log))
+  (let [fos (writer path)]
+    (dotimes [i (count a)]
+      (.write fos (str i " " (seq (aget a i)) "\n")))
+    (.close fos)))
 
 (defn log-rete []
   "Log RETE"
   (str
-    (log-hm "Alpha Net" =ANET=)
-    (log-lst "Beta Net Plan" =BPLAN=)
-    (log-array "Apha-Beta Links" =ABLINK=)))
+    (log-hm "alpha-net-plan.txt" =ANET=)
+    (log-lst "beta-net-plan.txt" =BPLAN=)
+    (log-array "alpha-beta-links.txt" =ABLINK=)))
 
 (defn amem
   "Return an alpha memory cell for a given index <i>"
@@ -542,6 +554,7 @@
   "Fire resolved production"
   ;;(println [:FIRE-RESOLVED reso])
   (let [[[pn sal rhs] ctx] reso]
+    (if DEBUG (println [:FIRE pn :CONTEXT ctx]))
     (doseq [exp rhs]
       (eval-then-mp ctx exp))))
 
@@ -637,7 +650,7 @@
 (defn assert-trip
   "Function for assertion of one triple <trip> outside of the right hand side of rules"
   [trip]
-  ;;(println [:ASSERT-TRIP trip])
+  (if DEBUG (println [:ASSERT-TRIP trip]))
   (if-let [fact (mk-fact trip)]
     (when-let [ais (a-indices2 fact)]
       ;; fill alpha nodes
@@ -757,6 +770,8 @@
     (let [mode (first args)
           pset (read-string (slurp (nth args 1)))
           fset (read-string (slurp (nth args 2)))]
-      (if (= mode "synch")
-        (rutime (run-synch pset fset))
-        (rutime (run-asynch pset fset))))))
+      (condp = mode 
+        "synch" (do (def DEBUG nil) (rutime (run-synch pset fset)))
+        "asynch" (do (def DEBUG nil) (rutime (run-asynch pset fset)))
+        "debug" (do (def DEBUG true) (rutime (run-synch pset fset)))
+        (println "First argument: synch, asynch or debug!")))))

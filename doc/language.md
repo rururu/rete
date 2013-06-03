@@ -59,4 +59,7 @@ In this case, the subject is treated as an object, predicates - as this object p
 ```
 ( <object> <property1> <value1> <property2> <value2> ... <propertyN> <valueN> )
 
+Test
+----
 
+The test is a binary predicate in the infix notation.
