@@ -58,8 +58,37 @@ as a list with this subject on a first place and a rest of the list consisting o
 In this case, the subject is treated as an object, predicates - as this object properties, and objects as property values:
 ```
 ( <object> <property1> <value1> <property2> <value2> ... <propertyN> <valueN> )
+```
 
 Test
 ----
 
-The test is a binary predicate in the infix notation.
+The test is a binary predicate in the infix notation. The following is a table of binary predicates and implementing them Clojure functions:
+
+<table>
+<tr><td>Predicate</td><td>Implementing Clojure function</td>\</tr>
+<tr><td>x = y</td><td>(= x y)</td>\</tr>
+<tr><td>x != y</td><td>(not (= x y))</td>\</tr>
+<tr><td>x > y</td><td>(> x y)</td>\</tr>
+<tr><td>x < y</td><td>(< x y)</td>\</tr>
+<tr><td>x >= y</td><td>(>= x y)</td>\</tr>
+<tr><td>x <= y</td><td>(<= x y)</td>\</tr>
+<tr><td>x and y</td><td>(and x y)</td>\</tr>
+<tr><td>x or y</td><td>(or x y)</td>\</tr>
+<tr><td>x not y</td><td>(not y)</td>\</tr>
+</table>
+
+The table can be changed by redefining function "eval-test". As arguments of predicates can be used any Clojure expressions. These expressions can contain variables, defined earlier inside a rule. Example:
+
+```
+(P5 0
+    ((?p weight ?w
+         height ?h)
+      ((+ (/ ?w 2) 12.3) < (* 0.5 ?h)))
+    =>
+    ((println [:COOL! ?p ?w ?h])
+     (println (str (+ (div ?w 2) 12.3) " < " (* 0.5 ?h)))))
+```
+Note: Function "div" used to denote Clojure division function "/".
+
+
