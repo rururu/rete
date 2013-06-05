@@ -92,15 +92,6 @@
         (.put hm key (mk-predicate-hm pred-obj (.get hm key) fn))
         hm))))
 
-(defn add-anet-entry
-  "If <trip> in a left hand side of a rule is a pattern (not test with a function on the predicate place)
-   adds a new entry to the hash map <hm> representing the beta net"
-  [trip hm]
-  ;;(println [:ADD-ANET-ENTRY :TRIP trip :HM hm])
-  (if (func? (pred trip))
-    hm
-    (mk-subject-hm trip hm acnt)))
-
 (defn trans-lhs
   "Translate left hand side"
   ([lhs]
@@ -110,6 +101,22 @@
     (if (> (count props) 2)
       (map #(cons obj %) (partition 2 props))
       (list trip))))
+
+(defn add-anet-entry
+  "If <trip> in a left hand side of a rule is a pattern (not test with a function on the predicate place)
+   adds a new entry to the hash map <hm> representing the alpha net.
+   If test contains call to 'exist', for its args also adds entries"
+  [trip hm]
+  ;;(println [:ADD-ANET-ENTRY :TRIP trip :HM hm])
+  (if (func? (pred trip))
+    (let [ob (obj trip)]
+      (if (and (seq? ob) (= (first ob) 'exist))
+        (loop [trips (trans-lhs [(rest ob)]) ant hm]
+          (if (empty? trips)
+            ant
+            (recur (rest trips) (add-anet-entry (first trips) ant)) ))
+        hm))
+    (mk-subject-hm trip hm acnt)))
 
 (defn anet-for-pset
   "Build the alpha net for the given production set (rule set) <pset> as a hash map"
@@ -260,40 +267,6 @@
   (doseq [[i & v] bplan]
     (aset bnet i v)))
 
-(def reset nil)
-
-(defn create-rete [pset]
-  "Create RETE from a production set and reset"
-  (try
-    (def =ACNT= 0)
-    (if DEBUG (println ".... Creating ANET PLAN for Pset ...."))
-    (def =ANET= (anet-for-pset pset))
-    (if DEBUG (println ".... Creating BNET PLAN for Pset ...."))
-    (def =BPLAN= (beta-net-plan pset =ANET=))
-    (def =ABLINK= (object-array =ACNT=))
-    (def =BCNT= (count =BPLAN=))
-    (def =BNET= (object-array =BCNT=))
-    (fill-bnet =BNET= =BPLAN=)
-    (fill-ablink =ABLINK= =BPLAN=)
-    (reset)
-    (when DEBUG
-      (log-rete)
-      (println ".... Log Files Created ....")
-      (println ".... RETE Created and Reset ...."))
-    [=ACNT= =BCNT=]
-    (catch Throwable twe
-      (println twe)
-      nil)))
-
-(defn reset []
-  "Reset: clear and initialize all memories"
-  (def =AMEM= (object-array =ACNT=))
-  (def =BMEM= (object-array =BCNT=))
-  (def =FMEM= (HashMap.))
-  (def =FCNT= 0)
-  (def =CFSET= nil)
-  (def =FIDS= (HashMap.)))
-
 (defn log-lst [path x]
   "Log list"
   (let [fos (writer path)]
@@ -316,12 +289,46 @@
       (.write fos (str i " " (seq (aget a i)) "\n")))
     (.close fos)))
 
-(defn log-rete []
+(defn log-rete [anet bplan ablink]
   "Log RETE"
   (str
-    (log-hm "alpha-net-plan.txt" =ANET=)
-    (log-lst "beta-net-plan.txt" =BPLAN=)
-    (log-array "alpha-beta-links.txt" =ABLINK=)))
+    (log-hm "alpha-net-plan.txt" anet)
+    (log-lst "beta-net-plan.txt" bplan)
+    (log-array "alpha-beta-links.txt" ablink)))
+
+(def reset nil)
+
+(defn create-rete [pset]
+  "Create RETE from a production set and reset"
+  (try
+    (def =ACNT= 0)
+    (if DEBUG (println ".... Creating ANET PLAN for Pset ...."))
+    (def =ANET= (anet-for-pset pset))
+    (if DEBUG (println ".... Creating BNET PLAN for Pset ...."))
+    (def =BPLAN= (beta-net-plan pset =ANET=))
+    (def =ABLINK= (object-array =ACNT=))
+    (def =BCNT= (count =BPLAN=))
+    (def =BNET= (object-array =BCNT=))
+    (fill-bnet =BNET= =BPLAN=)
+    (fill-ablink =ABLINK= =BPLAN=)
+    (reset)
+    (when DEBUG
+      (log-rete =ANET= =BPLAN= =ABLINK=)
+      (println ".... Log Files Created ....")
+      (println ".... RETE Created and Reset ...."))
+    [=ACNT= =BCNT=]
+    (catch Throwable twe
+      (println twe)
+      nil)))
+
+(defn reset []
+  "Reset: clear and initialize all memories"
+  (def =AMEM= (object-array =ACNT=))
+  (def =BMEM= (object-array =BCNT=))
+  (def =FMEM= (HashMap.))
+  (def =FCNT= 0)
+  (def =CFSET= nil)
+  (def =FIDS= (HashMap.)))
 
 (defn amem
   "Return an alpha memory cell for a given index <i>"
@@ -733,13 +740,35 @@
   [x y]
   (/ x y))
 
+(defn exist-const [trips]
+  "True if all fact ids for tripl exist"
+  (every? number? (map find-fact-id trips)))
+
+(defn exist-vari [vari trips]
+  "First find facts for first pattern in alpha memory.
+   Then use them for substitution variable values.
+   Then use 'exist-cons' to find first solution"
+  ;;(println [:EXIST-VARI vari trips])
+  (letfn [(subst1 [v trips]
+                  (map #(cons v (rest %)) trips))]
+    (let [[fst & rst] trips
+          aip (a-indexof-pattern fst =ANET=)
+          am (amem aip)]
+      (if (seq am)
+        (let [obs (map first am)
+              ctl (map #(subst1 % rst) obs)]
+          (some exist-const ctl)) )) ))
+  
+
 (defn exist [& args]
-  "Existential function used in left hand side"
-  ;;(println [:EXIST args :TRANS-ARGS (trans-lhs [args])])
+  "Existential function used in left hand side.
+   If its first arg is variable, handle specifically"
+  ;;(println [:EXIST args])
   (let [trips (trans-lhs [args])
-        fids (map find-fact-id trips)
-        nums (filter number? fids)]
-    (== (count nums) (count trips))))
+        head (first args)]
+    (if (vari? head)
+      (exist-vari head trips)
+      (exist-const trips))))
 
 (defn run-synch [pset fset]
   "Create RETE for pset and assert and fire facts from fset synchronously"

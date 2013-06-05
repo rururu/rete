@@ -48,4 +48,9 @@
       (?x status ?s1)
       (true not (exist ?x status hot valve closed)) )
     =>
-    ((println [:ALL WELL ?x :STATUS ?s1]))))
+    ((println [:ALL WELL ?x :STATUS ?s1])))
+(P8 0
+    ((context state test2)
+      (true not (exist ?x status hot valve closed)) )
+    =>
+    ((println [:ALL WELL ?x :STATUS ?s1])) ))
