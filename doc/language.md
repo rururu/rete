@@ -64,15 +64,14 @@ Test
 ----
 
 The test is a binary predicate in the infix notation. The following is a table of binary predicates and implementing them Clojure functions:
-
 <table>
 <tr><td>Predicate</td><td>Implementing Clojure function</td>\</tr>
 <tr><td>x = y</td><td>(= x y)</td>\</tr>
 <tr><td>x != y</td><td>(not (= x y))</td>\</tr>
 <tr><td>x > y</td><td>(> x y)</td>\</tr>
-<tr><td>x < y</td><td>(< x y)</td>\</tr>
+<tr><td>x &lt; y</td><td>(&lt; x y)</td>\</tr>
 <tr><td>x >= y</td><td>(>= x y)</td>\</tr>
-<tr><td>x <= y</td><td>(<= x y)</td>\</tr>
+<tr><td>x &lt;= y</td><td>(&lt;= x y)</td>\</tr>
 <tr><td>x and y</td><td>(and x y)</td>\</tr>
 <tr><td>x or y</td><td>(or x y)</td>\</tr>
 <tr><td>x not y</td><td>(not y)</td>\</tr>
