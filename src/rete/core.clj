@@ -3,7 +3,7 @@
   (:import java.util.HashMap)
   (:gen-class))
 
-(def DEBUG nil)
+(def TRACE nil)
 
 (defn throw-mess [mess]
   "Throw message"
@@ -122,12 +122,12 @@
   "Build the alpha net for the given production set (rule set) <pset> as a hash map"
   [pset]
   (loop [pp pset anet nil]
-    (if DEBUG (println [:PRODUCTION (first pp)]))
+    (if TRACE (println [:PRODUCTION (first pp)]))
     (if (empty? pp)
       anet
       (recur (rest pp)
              (loop [trips (trans-lhs (lhs (first pp))) ant anet]
-               (if DEBUG (println [:TRIPLE (first trips)]))
+               (if TRACE (println [:TRIPLE (first trips)]))
                (if (empty? trips)
                  ant
                  (recur (rest trips) (add-anet-entry (first trips) ant)) ))) )))
@@ -220,7 +220,7 @@
       (symbol? ex) ex
       (string? ex) ex
       (keyword? ex) ex
-      (list? ex) (if (list? (first ex))
+      (seq? ex) (if (seq? (first ex))
                    (map trans-expr ex)
                    (tr-list (first ex) (rest ex)))
       (vector? ex) (apply vector (map trans-expr ex)))))
@@ -302,9 +302,9 @@
   "Create RETE from a production set and reset"
   (try
     (def =ACNT= 0)
-    (if DEBUG (println ".... Creating ANET PLAN for Pset ...."))
+    (if TRACE (println ".... Creating ANET PLAN for Pset ...."))
     (def =ANET= (anet-for-pset pset))
-    (if DEBUG (println ".... Creating BNET PLAN for Pset ...."))
+    (if TRACE (println ".... Creating BNET PLAN for Pset ...."))
     (def =BPLAN= (beta-net-plan pset =ANET=))
     (def =ABLINK= (object-array =ACNT=))
     (def =BCNT= (count =BPLAN=))
@@ -312,7 +312,7 @@
     (fill-bnet =BNET= =BPLAN=)
     (fill-ablink =ABLINK= =BPLAN=)
     (reset)
-    (when DEBUG
+    (when TRACE
       (log-rete =ANET= =BPLAN= =ABLINK=)
       (println ".... Log Files Created ....")
       (println ".... RETE Created and Reset ...."))
@@ -561,7 +561,7 @@
   "Fire resolved production"
   ;;(println [:FIRE-RESOLVED reso])
   (let [[[pn sal rhs] ctx] reso]
-    (if DEBUG (println [:FIRE pn :CONTEXT ctx]))
+    (if TRACE (println [:FIRE pn :CONTEXT ctx]))
     (doseq [exp rhs]
       (eval-then-mp ctx exp))))
 
@@ -640,6 +640,7 @@
 (defn retract-trip [trip]
   "Retract triplet"
   ;;(println [:RETRACT-TRIP trip])
+  (if TRACE (println [:<== trip]))
   (if-let [fid (find-fact-id trip)]
     (let [ais (a-indices2 trip)]
       ;; retract from alpha nodes
@@ -657,7 +658,7 @@
 (defn assert-trip
   "Function for assertion of one triple <trip> outside of the right hand side of rules"
   [trip]
-  (if DEBUG (println [:ASSERT-TRIP trip]))
+  (if TRACE (println [:==> trip]))
   (if-let [fact (mk-fact trip)]
     (when-let [ais (a-indices2 fact)]
       ;; fill alpha nodes
@@ -752,13 +753,13 @@
   (letfn [(subst1 [v trips]
                   (map #(cons v (rest %)) trips))]
     (let [[fst & rst] trips
-          aip (a-indexof-pattern fst =ANET=)
-          am (amem aip)]
-      (if (seq am)
-        (let [obs (map first am)
-              ctl (map #(subst1 % rst) obs)]
-          (some exist-const ctl)) )) ))
-  
+          aip (a-indexof-pattern fst =ANET=)]
+      (if aip
+        (let [am (amem aip)]
+          (if (seq am)
+            (let [obs (map first am)
+                  ctl (map #(subst1 % rst) obs)]
+              (some exist-const ctl))) )) )))
 
 (defn exist [& args]
   "Existential function used in left hand side.
@@ -792,15 +793,10 @@
      (println (str "Elapsed time: " (/ (double (- (. System (nanoTime)) start#)) 1000000.0) " msecs"))
      ret#))
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (if (= (count args) 3)
-    (let [mode (first args)
-          pset (read-string (slurp (nth args 1)))
-          fset (read-string (slurp (nth args 2)))]
-      (condp = mode 
-        "synch" (do (def DEBUG nil) (rutime (run-synch pset fset)))
-        "asynch" (do (def DEBUG nil) (rutime (run-asynch pset fset)))
-        "debug" (do (def DEBUG true) (rutime (run-synch pset fset)))
-        (println "First argument: synch, asynch or debug!")))))
+(defn trace []
+  "Begins tracing of translation and execution"
+  (def TRACE true))
+
+(defn untrace []
+  "Ends tracing of translation and execution"
+  (def TRACE nil))

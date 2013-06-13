@@ -21,7 +21,9 @@ As can be seen from the results, rete initially far behind and then starts to ca
 To get the results execute in REPL the command:
 
 ```
-(-main "asynch" "your_path_to_manners_pset.clj_file" "your_path_to_manners_fsetN.clj_file")
+(require 'clips.like)
+(in-ns 'clips.like)
+(-main "run:asynch" "your_path_to_manners_pset.clj_file" "your_path_to_manners_fsetN.clj_file")
 ```
 Copyright and license
 ----
