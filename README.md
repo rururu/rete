@@ -18,13 +18,15 @@ Benchmark table
 Test results obtained on the same hardware.
 As can be seen from the results, rete initially far behind and then starts to catch up CLIPS.
 
-To get the results execute in REPL the command:
+To get the results run in REPL:
 
 ```
 (require 'clips.like)
 (in-ns 'clips.like)
-(-main "run:asynch" "your_path_to_manners_pset.clj_file" "your_path_to_manners_fsetN.clj_file")
+(-main "run:asynch" "examples/manners_pset.clj" "examples/manners_fset8.clj")
 ```
+For further information see [Documentation] (https://github.com/rururu/rete/blob/master/doc/intro.md)
+
 Copyright and license
 ----
 

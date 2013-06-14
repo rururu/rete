@@ -26,7 +26,7 @@ The production (rule) is a list of four parts:
 ```
 The name is a symbol or a string.
 The salience(priority) is an integer number, positive or negative.
-The left hand side is a list of fact patterns or tests.
+The left hand side is a list of fact patterns or tests. First element of the left hand side can be only a pattern.
 The right hand side is a list of function calls.
 
 Fact and fact pattern
