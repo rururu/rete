@@ -1,5 +1,6 @@
 (ns clips.like
-(:use rete.core))
+  (:use rete.core)
+  (:gen-class))
 
 (def CLI-RETRACT {})
 
