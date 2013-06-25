@@ -1,0 +1,15 @@
+?:
+ chest-name: {?=14}
+ goal-is-to-argument2: {?=20}
+ chest-contents: {?=16}
+ thing-on-top-of: {ceiling=17, floor=12, ?=4}
+ !=: {ceiling=26, ladder=22, ?=7, floor=5, blank=27}
+ monkey-location: {?=10}
+ thing-weight: {light=3}
+ goal-is-to-action: {hold=8, on=23, move=19, walk-to=15, eat=31, unlock=0}
+ thing-location: {?=11}
+ monkey-holding: {?=6, blank=25}
+ monkey-on-top-of: {ladder=24, floor=30, ?=9}
+ chest-unlocked-by: {?=13}
+ goal-is-to-argument1: {ladder=21, floor=29, ?=1, blank=28}
+ thing-name: {ladder=18, ?=2}

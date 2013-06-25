@@ -6,6 +6,10 @@
 
 (def CLI-MODIFY {})
 
+(defn flatten1 [x]
+  (if (seq x)
+     (cons (ffirst x) (cons (second (first x)) (flatten1 (rest x)) )) ))
+
 (defn fill-default [slots]
   (cond
     (empty? slots) nil
@@ -188,7 +192,7 @@
   (let [fl1 (map #(list (first %) (apply hash-map (nnext %))) facts)
         fl2 (map #(list (first %) (merge-defaults (first %) (second %) tm)) fl1)
         fl3 (map #(list (first %) (prefix-keys (first %) (second %))) fl2)]
-    (map #(cons (gensym (name (first %))) (flatten (seq (second %)))) fl3)))
+    (map #(cons (gensym (name (first %))) (flatten1 (seq (second %)))) fl3)))
 
 (defn cli-trans-rules [rules tm]
   "Translates rule descriptions into list of productions"
