@@ -6,9 +6,8 @@
 
 (def CLI-MODIFY {})
 
-(defn flatten1 [x]
-  (if (seq x)
-     (cons (ffirst x) (cons (second (first x)) (flatten1 (rest x)) )) ))
+(defn to-binding [mp]
+  (interleave (keys mp) (vals mp)))
 
 (defn fill-default [slots]
   (cond
@@ -67,22 +66,22 @@
         sm2 (merge-newvars nvm (add-to mslots (keys nvm)))
         smm (select-keys sm2 mslots)
         pfx (name typ)
-        sls (flatten (seq (prefix-keys pfx sm2)))
-        slm (flatten (seq (prefix-keys pfx smm)))]
+        sls (to-binding (prefix-keys pfx sm2))
+        slm (to-binding (prefix-keys pfx smm))]
     (def CLI-MODIFY (assoc CLI-MODIFY ovar slm))
     (cons (cons ovar sls) tsts)))
 
 (defn patt-will-retract [typ ovar sm tm]
   (let [pm (prefix-keys (name typ) sm)
         [nvm tsts] (find-not-vals pm)
-        sls (flatten (seq nvm))]
+        sls (to-binding nvm)]
     (def CLI-RETRACT (assoc CLI-RETRACT ovar sls))
     (cons (cons ovar sls) tsts)))
 
 (defn patt-will-rest [typ ovar sm]
   (let [pm (prefix-keys (name typ) sm)
         [nvm tsts] (find-not-vals pm)
-        sls (flatten (seq nvm))]
+        sls (to-binding nvm)]
     (cons (cons ovar sls) tsts)))
 
 (defn cli-trans-patt [typ tail vtr vstm tm]
@@ -96,7 +95,7 @@
 (defn cli-trans-not [head tail]
   (let [sm (apply hash-map (rest tail))
         pm (prefix-keys (name head) sm)
-        sls (flatten (seq pm))]
+        sls (to-binding pm)]
     (list 'true 'not (concat ['exist (first tail)] sls)) ))
 
 (defn cli-trans-lhs
@@ -129,7 +128,7 @@
         sm1 (apply hash-map svals)
         sm2 (merge-defaults typ sm1 tm)
         pm (prefix-keys (name typ) sm2)
-        sls (flatten (seq pm))]
+        sls (to-binding pm)]
     [(cons 'asser (cons (list 'gensym (name typ)) sls))]))
 
 (defn cli-trans-retr [retr]
@@ -141,7 +140,7 @@
         sm (apply hash-map svals)
         pm (prefix-keys (name typ) sm)]
     [(cons 'retract (cons ovar cmo))
-     (cons 'asser (cons ovar (flatten (seq pm)) ))]))
+     (cons 'asser (cons ovar (to-binding pm) ))]))
 
 (defn cli-trans-rhs
   ([rhs tm]
@@ -192,7 +191,7 @@
   (let [fl1 (map #(list (first %) (apply hash-map (nnext %))) facts)
         fl2 (map #(list (first %) (merge-defaults (first %) (second %) tm)) fl1)
         fl3 (map #(list (first %) (prefix-keys (first %) (second %))) fl2)]
-    (map #(cons (gensym (name (first %))) (flatten1 (seq (second %)))) fl3)))
+    (map #(cons (gensym (name (first %))) (to-binding (second %))) fl3)))
 
 (defn cli-trans-rules [rules tm]
   "Translates rule descriptions into list of productions"
