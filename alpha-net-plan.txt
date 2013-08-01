@@ -1,15 +1,19 @@
 ?:
- chest-name: {?=14}
- goal-is-to-argument2: {?=20}
- chest-contents: {?=16}
- thing-on-top-of: {ceiling=17, floor=12, ?=4}
- !=: {ceiling=26, ladder=22, ?=7, floor=5, blank=27}
- monkey-location: {?=10}
- thing-weight: {light=3}
- goal-is-to-action: {hold=8, on=23, move=19, walk-to=15, eat=31, unlock=0}
- thing-location: {?=11}
- monkey-holding: {?=6, blank=25}
- monkey-on-top-of: {ladder=24, floor=30, ?=9}
- chest-unlocked-by: {?=13}
- goal-is-to-argument1: {ladder=21, floor=29, ?=1, blank=28}
- thing-name: {ladder=18, ?=2}
+ guest_name: {?=1}
+ !=: {?=11}
+ guest_sex: {?=9}
+ path_name: {?=12}
+ choosen_hobby: {?=14}
+ guest_hobby: {?=10}
+ choosen_name: {?=13}
+ last_seat: {?=16}
+ seating_name2: {?=6}
+ path_seat: {?=19}
+ seating_path_done: {yes=8, no=18}
+ seating_seat2: {?=5}
+ seating_seat1: {?=4}
+ seating_pid: {?=7}
+context:
+ state: {assign_seats=3, check_done=15, make_path=17, start=0, print_results=20}
+count:
+ c: {?=2}

@@ -640,9 +640,9 @@
 (defn retract-trip [trip]
   "Retract triplet"
   ;;(println [:RETRACT-TRIP trip])
-  (if TRACE (println [:<== trip]))
   (if-let [fid (find-fact-id trip)]
     (let [ais (a-indices2 trip)]
+      (if TRACE (println [:<== trip :id fid]))
       ;; retract from alpha nodes
       (doseq [ai ais]
         (set-amem ai (remove #(= (fact-id %) fid) (amem ai)) ))
@@ -653,19 +653,19 @@
         (filter #(not (some #{fid} (:FIDS (second %)))) =CFSET=))
       (.remove  =FIDS= fid)
       ;; remove from fact memory
-      (def =FMEM= (remove-fact trip fid =FMEM=)) )))
+      (def =FMEM= (remove-fact trip fid =FMEM=)) ) ))
 
 (defn assert-trip
   "Function for assertion of one triple <trip> outside of the right hand side of rules"
   [trip]
-  (if TRACE (println [:==> trip]))
   (if-let [fact (mk-fact trip)]
     (when-let [ais (a-indices2 fact)]
+      (if TRACE (println [:==> trip :id (fact-id fact)]))
       ;; fill alpha nodes
       (doseq [ai ais]
         (set-amem ai (cons fact (amem ai)) ))
       ;; activate alpha nodes
-      (activate-a ais))))
+      (activate-a ais)) ))
 
 (defn assert-list
   "Function for assertion a list of triples or object descriptions (see comments on the function 'asser'). 
