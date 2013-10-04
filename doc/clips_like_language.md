@@ -1,11 +1,12 @@
 # The CLIPS-like Language
 
 The CLIPS-like language helps to run CLIPS examples in this environment and develop own applications. It lacks many of CLIPS features, to mention few - multislots, slot value types, complex logical expressions. Syntax also is simplified.
-Application description on CLIPS-like language consist of three lists: templates, rules and facts:
+Application description on CLIPS-like language consist of three mandatory lists: templates, rules, facts, and one optional: functions:
 ```
 ((templates t1 t2 ... tn )
- (rules t1 t2 ... tn )
- (facts t1 t2 ... tn ))
+ (rules r1 r2 ... rm )
+ (facts f1 f2 ... fk )
+ [(functions df1 df1 ... dfj)]) 
 ```
 Template
 ----
@@ -87,7 +88,11 @@ they will be added automatically during translation. Example:
 (monkey ?m location t5-7 on-top-of green-couch holding blank)
 ```
 
-See full example of CLIPS-like language file [mab_cli.clj] (https://github.com/rururu/rete/blob/master/examples/mab_cli.clj).
+Functions
+----
+The functions section contains ordinary clojure function definitions optionally prepended with namespace definition (ns <namespace>)
+
+See examples of CLIPS-like language files [mab_cli.clj] (https://github.com/rururu/rete/blob/master/examples/mab_cli.clj) and [testfunc_cli.clj] (https://github.com/rururu/rete/blob/master/examples/testfunc_cli.clj).
 To run this example execute in REPL:
 ```
 (require 'clips.like)

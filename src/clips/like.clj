@@ -220,6 +220,10 @@
         (def TEMPLATES (cli-trans-templs (rest (first trf)) ))
         (def PRODUCTIONS (cli-trans-rules (rest (second trf)) TEMPLATES))
         (def FACTS (cli-trans-facts (rest (nth trf 2)) TEMPLATES))
+        (if (and (> (count trf) 3) (= (first (nth trf 3))) 'functions)
+          (let [ons (ns-name *ns*)]
+            (eval (cons 'do (rest (nth trf 3))))
+            (in-ns ons)))
         (run-with modes))
       (println (str "Wrong format file: " path)) )))
 
