@@ -1,19 +1,15 @@
 ?:
- guest_name: {?=1}
- !=: {?=11}
- guest_sex: {?=9}
- path_name: {?=12}
- choosen_hobby: {?=14}
- guest_hobby: {?=10}
- choosen_name: {?=13}
- last_seat: {?=16}
- seating_name2: {?=6}
- path_seat: {?=19}
- seating_path_done: {yes=8, no=18}
- seating_seat2: {?=5}
- seating_seat1: {?=4}
- seating_pid: {?=7}
-context:
- state: {assign_seats=3, check_done=15, make_path=17, start=0, print_results=20}
-count:
- c: {?=2}
+ edge-p1: {?=5}
+ edge-plotted: {null=28, ?=19}
+ junction-p1: {?=13}
+ junction-p2: {?=11}
+ junction-type: {arrow=15, L=10, fork=21, tee=20}
+ line-p2: {?=1}
+ edge-label: {null=25, B=23, ?=14, PLUS=22, MINUS=24}
+ !=: {null=27, ?=7}
+ edge-joined: {false=8, ?=4}
+ line-p1: {?=2}
+ junction-p3: {?=16}
+ edge-p2: {?=6}
+ junction-base-point: {?=12}
+ stage-value: {detect-junctions=3, labeling=18, find-initial-boundary=9, duplicate=0, plot-remaining-edges=26, find-second-boundary=17}

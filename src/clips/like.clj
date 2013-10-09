@@ -237,3 +237,30 @@
         (run-with (first args)))
     2 (cli-run-file (first args) (second args))
     (println "Number of arguments: 2 or 3, see documentation!")))
+    
+(defn obs [facts]
+  "Select different objects - that means different subjects from all fact-triples"
+  (set (map first facts)))
+
+(defn o-type [pred]
+  "Create symbol of object type from predicate of triple"
+  (symbol (first (seq (.split (name pred) "-")) ) ))
+  
+(defn o-slot [pred]
+  "Create symbol of object's slot from predicate of triple"
+  (symbol (second (seq (.split (name pred) "-")) ) ))
+  
+(defn o-desc [obj facts]
+  "Create object description - that is clips-like fact"
+  (let [ofl (filter #(= (first %) obj) facts)
+        typ (o-type (nth (first ofl) 1))
+        svals (mapcat #(list (o-slot (nth % 1)) (nth % 2)) ofl)]
+    (cons typ (cons obj svals))))
+    
+(defn cli-facts []
+  "Pretty prints fact-triples as objects - clips-like facts"
+  (let [facts (rete.core/facts)
+        sobs (sort-by name (obs facts))]
+    (doseq [e (map #(o-desc % facts) sobs)]
+      (println e)) ))
+
