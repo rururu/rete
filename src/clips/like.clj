@@ -100,7 +100,7 @@
 
 (defn cli-trans-lhs
   ([lhs vtr vstm tm]
-    (mapcat #(cli-trans-lhs (first %) (second %) (rest %) % vtr vstm tm) lhs))
+    (doall (mapcat #(cli-trans-lhs (first %) (second %) (rest %) % vtr vstm tm) lhs)))
   ([h1 h2 tail whole vtr vstm tm]
     (cond
       (test? h2) [whole]
@@ -144,7 +144,7 @@
 
 (defn cli-trans-rhs
   ([rhs tm]
-    (mapcat #(cli-trans-rhs (first %) (rest %) % tm) rhs))
+    (doall (mapcat #(cli-trans-rhs (first %) (rest %) % tm) rhs)))
   ([h tail whole tm]
     (cond
       (= h 'assert) (cli-trans-ass (first tail) tm)
@@ -248,7 +248,7 @@
   
 (defn o-slot [pred]
   "Create symbol of object's slot from predicate of triple"
-  (symbol (second (seq (.split (name pred) "-")) ) ))
+  (symbol (apply str (interpose "-" (rest (seq (.split (name pred) "-"))) ) )))
   
 (defn o-desc [obj facts]
   "Create object description - that is clips-like fact"
@@ -263,4 +263,8 @@
         sobs (sort-by name (obs facts))]
     (doseq [e (map #(o-desc % facts) sobs)]
       (println e)) ))
+
+(defn cli-assert [fact]
+  "Assert clips-like fact as list of triples"
+  (assert-fact (first (cli-trans-facts [fact] TEMPLATES))))
 
