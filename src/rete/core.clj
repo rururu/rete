@@ -391,16 +391,15 @@
                  (if (= p f)
                    ctx)))]
     (let [[sf pf of fid] fact
-          [sp pp op] pattern
-          ctx3 (if-let [ctx1 (uni pp pf ctx)]
-                 (if-let [ctx2 (uni sp sf ctx1)]
-                   (uni op of ctx2)))]
-      (if ctx3
-        (let [ctx4 (assoc ctx3 :FIDS (cons fid (:FIDS ctx3)))
-              fids (.get =FIDS= fid)]
-          (if (not (some #{bi} fids))
-            (.put =FIDS= fid (cons bi fids)))
-          ctx4)) )))
+          [sp pp op] pattern]
+      (if (= pf pp)
+        (if-let [ctx3 (if-let [ctx2 (uni sp sf ctx)]
+                        (uni op of ctx2))]
+          (let [ctx4 (assoc ctx3 :FIDS (cons fid (:FIDS ctx3)))
+                fids (.get =FIDS= fid)]
+            (if (not (some #{bi} fids))
+              (.put =FIDS= fid (cons bi fids)))
+            ctx4))) )))
 
 (defn match-ctx-list [facts pattern ctx bi]
   "Match list of facts with pattern with respect to context"
@@ -501,29 +500,31 @@
   "Intermediate alpha activation"
   ;;(println [:INTER-A-ACTION :BI bi :AFPAT afpat :BMEM b-mem :AMEM a-mem])
   (let [[af & pattern] afpat
-        ctx-list (bmem (dec bi))
-        new-fact (first a-mem)
-        match-list (filter seq
+        ctx-list (bmem (dec bi))]
+    (if (seq ctx-list)
+      (let [new-fact (first a-mem)
+            match-list (filter seq
                            (if (= af 'f)
                              (map #(apply-test pattern %) ctx-list)
                              (map #(match-ctx new-fact pattern % bi) ctx-list)))]
-    (when (seq match-list)
-      (if (= af 'a)
-        (set-bmem bi (concat match-list b-mem)))
-      (activate-b (inc bi) match-list (fact-id new-fact)))))
+        (when (seq match-list)
+          (if (= af 'a)
+            (set-bmem bi (concat match-list b-mem)))
+          (activate-b (inc bi) match-list (fact-id new-fact))) ) )))
 
 (defn exit-a-action [bi afpat tail a-mem]
   "Exit alpha activation"
   ;;(println [:EXIT-A-ACTION :BI bi :AFPAT :TAIL tail :AFPAT afpat :AMEM a-mem])
   (let [[af & pattern] afpat
-        ctx-list (bmem (dec bi))
-        match-list (filter seq
+        ctx-list (bmem (dec bi))]
+    (if (seq ctx-list)
+      (let [match-list (filter seq
                            (if (= af 'f)
                              (map #(apply-test pattern %) ctx-list)
                              (map #(match-ctx (first a-mem) pattern % bi) ctx-list)))]
-    ;;(println [:MATCH-LIST match-list])
-    (if (seq match-list)
-      (add-to-confset tail match-list))))
+        ;;(println [:MATCH-LIST match-list])
+        (if (seq match-list)
+          (add-to-confset tail match-list))) )))
 
 (defn enex-a-action [bi afpat tail a-mem]
   "Entry and exit alpha activation (for LHS with 1 pattern)"

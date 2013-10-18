@@ -1,15 +1,17 @@
 ?:
- edge-p1: {?=5}
- edge-plotted: {null=28, ?=19}
- junction-p1: {?=13}
- junction-p2: {?=11}
- junction-type: {arrow=15, L=10, fork=21, tee=20}
+ edge-plotted: {NIL=31, ?=23}
+ junction-bigger-bp: {?=15}
+ junction-type: {arrow=17, L=16, fork=26, ?=10, tee=25}
  line-p2: {?=1}
- edge-label: {null=25, B=23, ?=14, PLUS=22, MINUS=24}
- !=: {null=27, ?=7}
- edge-joined: {false=8, ?=4}
- line-p1: {?=2}
- junction-p3: {?=16}
+ edge-label: {NIL=24, B=28, ?=18, PLUS=27, MINUS=29}
+ !=: {NIL=32, ?=7}
+ junction-p3: {?=19}
  edge-p2: {?=6}
  junction-base-point: {?=12}
- stage-value: {detect-junctions=3, labeling=18, find-initial-boundary=9, duplicate=0, plot-remaining-edges=26, find-second-boundary=17}
+ edge-p1: {?=5}
+ junction-p1: {?=13}
+ junction-p2: {?=11}
+ junction-lesser-bp: {?=21}
+ line-p1: {?=2}
+ edge-joined: {FALSE=4}
+ stage-value: {labeling=22, done-plot-remaining-edges=33, find-initial-boundary=14, detect-3-junctions-R=8, duplicate=0, detect-3-junctions-M=3, plot-remaining-edges=30, find-second-boundary=20, detect-2-junctions=9}
