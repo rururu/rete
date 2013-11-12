@@ -1,7 +1,8 @@
-rete
+Rete for Triples
 ====
 
-Clojure RETE implementation
+Clojure RETE implementation for triples.
+Better performance on CLIPS benchmarks gives [Rete for Frames] (https://github.com/rururu/rete4frames).
 
 Benchmark table
 ----
